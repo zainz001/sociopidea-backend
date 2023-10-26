@@ -13,3 +13,16 @@ try {
 }
 }
 
+export const createpost=(post)=> async (dispatch)=>{
+
+    try {
+        //we are getting response from backend in this
+        const {data} =await api.createpost(post);
+        dispatch ({type:'CREATE',payload:data});
+    
+    } catch (error) {
+        console.log(error.message);
+    }
+    }
+    
+    

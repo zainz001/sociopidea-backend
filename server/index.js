@@ -7,7 +7,6 @@ const app = express();
 
 
 app.use(bodyParser.json({ limit: "30mb", extend: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extend: true }));
 app.use(cors());
 app.use('/posts', postRoute)
 const PORT = process.env.PORT || 5000;
@@ -22,5 +21,5 @@ app.get("/server", (req, res) => {
   res.send("server is running");
 });
 app.listen(PORT, () => {
-  console.log("running");
+  console.log(`server running on ${PORT}`);
 }); 
