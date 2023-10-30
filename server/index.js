@@ -7,12 +7,13 @@ const app = express();
 
 
 app.use(bodyParser.json({ limit: "30mb", extend: true }));
+app.use(bodyParser.urlencoded({ limit: "30mb", extend: true }));
 app.use(cors());
 app.use('/posts', postRoute)
 const PORT = process.env.PORT || 5000;
 mongoose.set("strictQuery", false)
 mongoose
-  .connect("mongodb://localhost:27017/MERN", {
+  .connect("mongodb+srv://zaindon1A:zaindon1A@cluster0.epdq1ll.mongodb.net/", {
     useUnifiedTopology: true,
     useNewUrlParser: true
 

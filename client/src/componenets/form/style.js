@@ -13,10 +13,10 @@ export default makeStyles((theme) => ({
   form: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'centre',
   },
   fileInput: {
-    width: '97%',
+    width: '50%',
     margin: '10px 0',
   },
   buttonSubmit: {

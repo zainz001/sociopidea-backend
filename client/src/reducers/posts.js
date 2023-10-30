@@ -5,6 +5,8 @@ const postsReducer = (post = [], action) => {
             return action.payload;
         case 'CREATE':
             return [...post, action.payload];
+        case 'UPDATE':
+            return post.map((post) => post._id === action.payload._id ? action.payload : post);/*ager id yahi ha tu update kery nahi tu wohi porani post parhi rhy*/
         default:
             return post;
     }
