@@ -1,28 +1,34 @@
 import { AUTH } from '../containers/container'
 import * as api from '../api/index.js';
 //action creators
-export const signin = (formData, Navigate) => async (dispatch) => {
+export const signin = (FormData, Navigate) => async (dispatch) => {
 
     try {
-        const { data } = await api.signin(formData);
+        const { data } = await api.signIn(FormData);
         dispatch({ type: AUTH, data });
         Navigate('/');
     } catch (error) {
         console.log(error);
+        if (error.response) {
+            console.error('Response Data:', error.response.data);
+        }
     }
 
 
 }
-export const signup = (formData, Navigate) => async (dispatch) => {
+export const signup = (FormData, Navigate) => async (dispatch) => {
 
     try {
-        const { data } = await api.signup(formData);
+        const { data } = await api.signUp(FormData);
         dispatch({ type: AUTH, data });
 
 
         Navigate('/')
     } catch (error) {
         console.log(error);
+        if (error.response) {
+            console.error('Response Data:', error.response.data);
+        }
     }
 
 

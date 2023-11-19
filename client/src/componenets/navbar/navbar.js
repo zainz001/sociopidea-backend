@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import useStyles from './styles'
 import memories from '../../images/img.jpg';
 import { AppBar, Avatar, Button, Toolbar, Typography } from '@material-ui/core';
 import { Link, useLocation, } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
-
+import { jwtDecode } from 'jwt-decode';
 const Navbar = () => {
     const classes = useStyles();
-    const dispatch=useDispatch();
-    const location=useLocation();
-    const Navigate=useNavigate();
+    const dispatch = useDispatch();
+    const location = useLocation();
+    const Navigate = useNavigate();
     const [user, setuser] = useState(JSON.parse(localStorage.getItem('profile')));
-    const logout = () => {
-        dispatch({type:'LOGOUT'});
+    const logout = useCallback(() => {
+        dispatch({ type: 'LOGOUT' });
         Navigate('/');
         setuser(null);
-    }
+    }, [dispatch, Navigate, setuser]);
     useEffect(() => {
         const token = user?.token;
-
-        setuser(JSON.parse(localStorage.getItem('profile')))
-    }, [location])
-     return (
+        if (token) {
+            const decodedtoken = jwtDecode(token);
+            if (decodedtoken.exp * 1000 < new Date().getTime()) logout();
+        }
+        setuser(JSON.parse(localStorage.getItem('profile')));
+    }, [location, logout, user?.token, setuser]);
+    return (
         <AppBar className={classes.appBar} position="static" color="inherit" >
             <div className={classes.brandContainer} >
                 <Typography component={Link} to="/" className={classes.heading} variant="h2" align="center">Memories</Typography>
