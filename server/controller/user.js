@@ -28,7 +28,7 @@ export const signin = async (req,res)=>{
 
 export const signup = async (req,res)=>{
 
-    const {email,password,confirmassowrd,firstname,lastname}=req.body; 
+    const {email,password,confirmpassowrd,firstname,lastname}=req.body; 
 
 
     try {
@@ -38,7 +38,7 @@ export const signup = async (req,res)=>{
 
         if(existing) return res.status(400).json({message:"user already exist"}) ;
 
-        if(password !== confirmassowrd )return res.status(400).json({message:"Password not Same"}) ;
+        if(password !== confirmpassowrd )return res.status(400).json({message:"Password not Same"}) ;
 
         const hashedpassword= await bcrypt.hash(password,12);
         const result = await user.create({ email, password: hashedpassword, name: `${firstname} ${lastname}` });

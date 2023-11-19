@@ -10,8 +10,6 @@ import userRoute from './routes/user.js';
 const app = express();
 
 
-app.use(bodyParser.json({ limit: "30mb", extend: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extend: true }));
 app.use(cors());
 app.use('/posts', postRoute);
 app.use('/user', userRoute);
@@ -19,12 +17,15 @@ app.use('/user', userRoute);
 //app.use('/postsdelete', postdelete);
 const PORT = process.env.PORT || 5000;
 mongoose.set("strictQuery", false)
-mongoose
-  .connect("mongodb+srv://zaindon1A:zaindon1A@cluster0.epdq1ll.mongodb.net/", {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-
+mongoose.connect("mongodb+srv://zaindon1A:zaindon1A@cluster0.epdq1ll.mongodb.net/")
+  .then(() => {
+    console.log('Connected to MongoDB');
   })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
+    
+
 app.get("/server", (req, res) => {
   res.send("server is running");
 });

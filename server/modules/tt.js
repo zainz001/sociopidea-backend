@@ -1,9 +1,9 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const postSchema = mongoose.Schema({
     title: String,
     message: String,
-    name:String,
+    name: String,
     creator: String,
     tags: [String],
     selectedFile: String,
@@ -15,8 +15,8 @@ const postSchema = mongoose.Schema({
         type: Date,
         default: new Date(),
     },
-})
+});
 
 var postmessages = mongoose.model('postmessages', postSchema);
 
-export default postmessages;
+module.exports = postmessages;
