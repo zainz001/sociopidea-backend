@@ -10,8 +10,8 @@ import Input from './input';
 import { signin, signup } from '../../action/auth';
 
 const initialstate = {
-  firstName: '',
-  lastName: '',
+  firstname: '',
+  lastname: '',
   email: '',
   password: '',
   confirmpassword: '',
@@ -27,9 +27,11 @@ const Auth = () => {
 
   const dispatch = useDispatch();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
     if (isSignup) {
       const validationResult = validateSignup();
       if (validationResult) {
@@ -37,21 +39,24 @@ const Auth = () => {
         return;
       }
 
-      dispatch(signup(formData, Navigate));
+      await dispatch(signup(formData, Navigate));
     } else {
-      dispatch(signin(formData, Navigate));
+      await dispatch(signin(formData, Navigate));
     }
-  };
+  } catch (error) {
+    setError(error);
+  }
+};
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setError(''); // Clear any existing errors when the user starts typing
+    setError(''); 
   };
 
   const validateSignup = () => {
-    // Password validation
     const passwordRegex = /^(?=.*[A-Z])[a-zA-Z0-9]{8,12}$/;
     if (!passwordRegex.test(formData.password)) {
       return 'Password must be 8 to 12 characters with at least one uppercase letter.';
@@ -91,7 +96,7 @@ const Auth = () => {
     setFormData(initialstate);
     setIsSignup((prevIsSignup) => !prevIsSignup);
     setShowPassword(false);
-    setError(''); // Clear any existing errors when switching mode
+    
   };
 
   return (
@@ -107,8 +112,8 @@ const Auth = () => {
           <Grid container spacing={2}>
             {isSignup && (
               <>
-                <Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
-                <Input name="lastName" label="Last Name" handleChange={handleChange} half />
+                <Input name="firstname" label="First Name" handleChange={handleChange} autoFocus half />
+                <Input name="lastname" label="Last Name" handleChange={handleChange} half />
               </>
             )}
             <Input name="email" label="Email Address" handleChange={handleChange} type="email" />

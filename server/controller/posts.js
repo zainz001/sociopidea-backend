@@ -15,15 +15,18 @@ export const getposts = async (req, res) => {
     }
 }
 
-export const createpost = async (req, res) => { // <-- Corrected order of parameters
+
+export const createpost = async (req, res) => {
     const post = req.body;
 
-    const newpost = new postmessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() });
-try {
-        await newpost.save();
-        res.status(201).json(newpost);
+    const newPostMessage = new postmessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() })
+
+    try {
+        await newPostMessage.save();
+
+        res.status(201).json(newPostMessage);
     } catch (error) {
-        res.status(401).json({ message: error.message });
+        res.status(409).json({ message: error.message });
     }
 }
 export const updatepost = async (req, res) => {

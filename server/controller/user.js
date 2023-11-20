@@ -1,35 +1,40 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+const secret = 'test';
 import user from '../modules/user.js';
 
-export const signin = async (req,res)=>{
-        const {email,password}=req.body;
-        try {
-            const existing =await user.findone({email});
+export const signin = async (req, res) => {
+    const { email, password } = req.body;
 
-            if(!existing) return res.status(404).json({message:"user Does not exist"}) ;
-
-            const checkpassword= await  bcrypt.compare(password,existing.password);
-            
-            if(!checkpassword) return res.status(400).json({message:"invalid password"});
-            
-            const token=jwt.sign({email:existing.email, id:existing._id},'test',{expiresIn:"3000"});
-
-            res.status(200).json({result:existing,token});
-
-
-        } catch (error) {
-            res.status(500).json({message:'500 error'});
-            
+    try {
+        const oldUser = await user.findOne({ email });
+        
+        if (!oldUser) {
+            return res.status(404).json({ message: "User doesn't exist" });
         }
-}
 
+        const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+
+        if (!isPasswordCorrect) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, { expiresIn: "1h" });
+
+        res.status(200).json({ result: oldUser, token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+  
 
 export const signup = async (req,res)=>{
 
-    const {email,password,confirmpassowrd,firstname,lastname}=req.body; 
-
+    console.log(req.body);
+    const { email, password, confirmpassword, firstname, lastname } = req.body;
+    
 
     try {
         
@@ -38,7 +43,7 @@ export const signup = async (req,res)=>{
 
         if(existing) return res.status(400).json({message:"user already exist"}) ;
 
-        if(password !== confirmpassowrd )return res.status(400).json({message:"Password not Same"}) ;
+        if(password !== confirmpassword )return res.status(400).json({message:"Password not Same"}) ;
 
         const hashedpassword= await bcrypt.hash(password,12);
         const result = await user.create({ email, password: hashedpassword, name: `${firstname} ${lastname}` });

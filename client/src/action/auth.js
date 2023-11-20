@@ -11,6 +11,7 @@ export const signin = (FormData, Navigate) => async (dispatch) => {
         console.log(error);
         if (error.response) {
             console.error('Response Data:', error.response.data);
+             return Promise.reject('Invalid email or password.');
         }
     }
 
