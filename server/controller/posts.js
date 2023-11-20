@@ -2,7 +2,7 @@
 import postmessage from "../modules/postmessage.js";
 import mongoose from "mongoose";
 
-
+// Controller pattern implemented in all getpost, create etc responsible for handling specific HTTP requests and business logic.
 export const getposts = async (req, res) => {
     try {
         const postmessages = await postmessage.find();

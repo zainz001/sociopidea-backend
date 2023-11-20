@@ -5,6 +5,7 @@ import Navbar from './componenets/navbar/navbar';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PostDetails from './componenets/postdetails/PostDetails';
 import Home from './componenets/home/home';
+
 import Auth from './componenets/auth/auth';
 const App = () => {
   const user =JSON.parse(localStorage.getItem('profile'));

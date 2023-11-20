@@ -19,59 +19,74 @@ const initialstate = {
 
 const Auth = () => {
   const Navigate = useNavigate();
+
   const classes = useStyles();
   const [formData, setFormData] = useState(initialstate);
   const [showPassword, setShowPassword] = useState(false);
   const [isSignup, setIsSignup] = useState(false);
   const [error, setError] = useState('');
-
+  const [validationResult, setValidationResult] = useState('');
   const dispatch = useDispatch();
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    if (isSignup) {
-      const validationResult = validateSignup();
-      if (validationResult) {
-        setError(validationResult);
-        return;
+    try {
+      if (isSignup) {
+        const validationResult = await validateSignup(); // Await the validation result
+        if (validationResult) {
+          setValidationResult(validationResult);
+          return;
+        }
+
+        await dispatch(signup(formData, Navigate));
+      } else {
+        await dispatch(signin(formData, Navigate));
       }
-
-      await dispatch(signup(formData, Navigate));
-    } else {
-      await dispatch(signin(formData, Navigate));
+    } catch (error) {
+      setError(error.message || 'Something went wrong');
     }
-  } catch (error) {
-    setError(error);
-  }
-};
-
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setError(''); 
+    setError('');
   };
 
-  const validateSignup = () => {
+  const validateSignup = async () => {
     const passwordRegex = /^(?=.*[A-Z])[a-zA-Z0-9]{8,12}$/;
+
     if (!passwordRegex.test(formData.password)) {
       return 'Password must be 8 to 12 characters with at least one uppercase letter.';
     }
 
-    // Email validation for signup
     const emailRegex = /^[a-zA-Z].*$/;
+
     if (!emailRegex.test(formData.email)) {
       return 'Email must start with an alphabet.';
     }
 
-    // You can add more validations as needed
+    if (isSignup && formData.password !== formData.confirmpassword) {
+      return 'Passwords do not match.';
+    }
 
-    return ''; // No validation errors
+    try {
+      const response = await fetch(`/api/check-email-exists?email=${formData.email}`);
+      const data = await response.json();
+
+      if (data.exists) {
+        return 'Email already exists. Please use a different email address.';
+      }
+
+      return '';
+    } catch (error) {
+      throw new Error(' Email Already exist.');
+    }
   };
+
 
   const googlerror = (error) => {
     console.log(error);
@@ -96,7 +111,7 @@ const handleSubmit = async (e) => {
     setFormData(initialstate);
     setIsSignup((prevIsSignup) => !prevIsSignup);
     setShowPassword(false);
-    
+    setError(''); // Clear any existing errors when switching mode
   };
 
   return (
@@ -127,6 +142,8 @@ const handleSubmit = async (e) => {
             {isSignup && <Input name="confirmpassword" label="Repeat Password" handleChange={handleChange} type="password" />}
           </Grid>
           {error && <Typography variant="body2" color="error">{error}</Typography>}
+          {validationResult && <Typography variant="body2" color="error">{validationResult}</Typography>}
+
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
             {isSignup ? 'Sign Up' : 'Sign In'}
           </Button>

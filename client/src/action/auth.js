@@ -17,20 +17,21 @@ export const signin = (FormData, Navigate) => async (dispatch) => {
 
 
 }
-export const signup = (FormData, Navigate) => async (dispatch) => {
-
+export const signup = (formData, Navigate) => async (dispatch) => {
     try {
-        const { data } = await api.signUp(FormData);
-        dispatch({ type: AUTH, data });
-
-
-        Navigate('/')
+      const { data } = await api.signUp(formData);
+      dispatch({ type: AUTH, data });
+      Navigate('/');
     } catch (error) {
-        console.log(error);
-        if (error.response) {
-            console.error('Response Data:', error.response.data);
-        }
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data.message === 'user already exists'
+      ) {
+        dispatch({ type: 'SIGNUP_ERROR', data: 'User already exists. Please log in.' });
+      } else {
+        dispatch({ type: 'SIGNUP_ERROR', data: 'Signup failed. Please try again later.' });
+        console.error('Signup failed:', error);
+      }
     }
-
-
-} 
+  };
