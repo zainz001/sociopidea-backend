@@ -1,14 +1,34 @@
+
+import user from '../modules/user.js';
+ // This file contains functions that abstract away the details of interacting with the user database.
+// getUserByEmail: Retrieves a user from the database based on the provided email.
+// createUser: Creates a new user in the database with the provided information.
+
+export const getUserByEmail = async (email) => {
+    return await user.findOne({ email });
+};
+
+export const createUser = async ({ email, password, name }) => {
+    return await user.create({ email, password, name });
+};
+
+//This separates the database operations into a repository (user-repository.js),
+// making your authentication logic more modular and easier to maintain.
+
+//  The repository pattern abstracts away the database operations, promoting better code organization and maintainability.
+
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 const secret = 'test';
-import user from '../modules/user.js';
+
 
 export const signin = async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const oldUser = await user.findOne({ email });
-        
+
         if (!oldUser) {
             return res.status(404).json({ message: "User doesn't exist" });
         }
@@ -28,7 +48,7 @@ export const signin = async (req, res) => {
     }
 };
 
-  
+
 
 export const signup = async (req, res) => {
     console.log(req.body);
@@ -59,3 +79,7 @@ export const signup = async (req, res) => {
         res.status(500).json({ message: '500 error' });
     }
 };
+//The repository pattern is a design pattern that isolates the data layer from the rest of the app.
+// The data layer refers to the part of your app, separate from the UI,
+// that handles the app's data and business logic,
+//exposing consistent APIs for the rest of your app to access this data

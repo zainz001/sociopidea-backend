@@ -73,18 +73,7 @@ const Auth = () => {
       return 'Passwords do not match.';
     }
 
-    try {
-      const response = await fetch(`/api/check-email-exists?email=${formData.email}`);
-      const data = await response.json();
-
-      if (data.exists) {
-        return 'Email already exists. Please use a different email address.';
-      }
-
-      return '';
-    } catch (error) {
-      throw new Error(' Email Already exist.');
-    }
+    
   };
 
 

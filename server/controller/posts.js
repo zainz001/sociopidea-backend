@@ -2,15 +2,45 @@
 import postmessage from "../modules/postmessage.js";
 import mongoose from "mongoose";
 
-// Controller pattern implemented in all getpost, create etc responsible for handling specific HTTP requests and business logic.
 export const getposts = async (req, res) => {
+    
+    const {page}=req.query
     try {
-        const postmessages = await postmessage.find();
+        const LIMIT=8;
+        const startindex=(Number(page)-1)*LIMIT;//get the starting index of every page
+        const total=await postmessage.countDocuments({}); //how many post are in the database 
+        const post = await postmessage.find().sort({_id:-1}).limit(LIMIT).skip(startindex);//this give us the newest post first
 
-        console.log(postmessages);
 
-        res.status(200).json(postmessages);
+        res.status(200).json({data:post,currentPage:Number(page),numberOfPages:Math.ceil(total/LIMIT)});
     } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
+//params is used for only 1 specific search 
+export const getpostsBySearch = async (req, res) => {
+    const { searchQuery, tags } = req.query;
+
+    try {
+        const title = searchQuery ? new RegExp(searchQuery, "i") : undefined;
+        const tagsArray = tags ? tags.split(',') : [];
+
+        const query = {};
+
+        if (title) {
+            query.$or = [
+                { title },
+                { tags: { $in: tagsArray } }
+            ];
+        } else {
+            query.tags = { $in: tagsArray };
+        }
+
+        const posts = await postmessage.find(query);
+
+        res.json({ data: posts });
+    } catch (error) {    
         res.status(404).json({ message: error.message });
     }
 }
