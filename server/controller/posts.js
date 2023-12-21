@@ -1,6 +1,9 @@
 
 import postmessage from "../modules/postmessage.js";
 import mongoose from "mongoose";
+import  express  from "express";
+const router =express.Router();
+
 
 export const getposts = async (req, res) => {
     
@@ -17,6 +20,20 @@ export const getposts = async (req, res) => {
         res.status(404).json({ message: error.message });
     }
 }
+export const getpost = async (req, res) => {
+    const {id}=req.params;
+    try {
+        
+        const post= await postmessage.findById(id);
+
+        
+        res.status(200).json(post);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
+
 
 //params is used for only 1 specific search 
 export const getpostsBySearch = async (req, res) => {
@@ -76,21 +93,39 @@ export const deletepost = async (req, res) => {
 
 export const like = async (req, res) => {
     const { id } = req.params;
-    if (!req.userId) return res.json({ message: 'UnAuthorized' })
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('no id available');
+
+    if (!req.userId) {
+        return res.json({ message: "Unauthenticated" });
+      }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
+    
     const post = await postmessage.findById(id);
-    const index = post.likes.findIndex((id) => id === String(req.userId));
 
-    if (index===-1) {
-        //like the post 
-        post.likes.push(req.userId)
+    const index = post.likes.findIndex((id) => id ===String(req.userId));
 
+    if (index === -1) {
+      post.likes.push(req.userId);
     } else {
-        post.likes=post.likes.filter((id)=>id !== String(req.userId)); 
-        //dislike the post
+      post.likes = post.likes.filter((id) => id !== String(req.userId));
     }
-    const updatepost = await postmessage.findByIdAndUpdate(id, post, { new: true });
 
-    res.json({ updatepost })
+    const updatedPost = await postmessage.findByIdAndUpdate(id, post, { new: true });
 
+    res.status(200).json(updatedPost);
 }
+
+
+export const commentPost = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+
+    const post = await postmessage.findById(id);
+
+    post.comments.push(value);
+
+    const updatedPost = await postmessage.findByIdAndUpdate(id, post, { new: true });
+
+    res.json(updatedPost);
+};
+export default router;

@@ -51,7 +51,7 @@ export const signin = async (req, res) => {
 
 
 export const signup = async (req, res) => {
-    console.log(req.body);
+    
     const { email, password, confirmpassword, firstname, lastname } = req.body;
 
     try {
