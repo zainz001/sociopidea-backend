@@ -1,23 +1,25 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Typography, TextField, Button } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import useStyles from './styles';
 import { commentPost } from '../../action/posts';
-// ... (other imports)
 
 const Commentsection = ({ post }) => {
   const classes = useStyles();
-  const [comments, setComments] = useState(post?.comments || []); // Ensure comments is initialized as an array
+  const [comments, setComments] = useState([]);
   const [comment, setComment] = useState('');
   const user = JSON.parse(localStorage.getItem('profile'));
   const dispatch = useDispatch();
   const commentRef = useRef();
 
+  useEffect(() => {
+    setComments(post?.comments || []);
+  }, [post]);
+
   const handleClick = async () => {
     const finalComment = `${user.result.name}:${comment}`;
     const newCommentData = await dispatch(commentPost(finalComment, post._id));
 
-    // Assuming newCommentData is an array of comments after the update
     if (newCommentData && newCommentData.comments) {
       setComments(newCommentData.comments);
       setComment('');
@@ -31,18 +33,25 @@ const Commentsection = ({ post }) => {
         <div className={classes.commentsInnerContainer}>
           <Typography gutterBottom variant="h6">Comments</Typography>
           {comments?.map((c, i) => (
-            <Typography key={i} gutterBottom variant="subtitle1">
-              {c && c.split(`: `)[0] && <strong>{c.split(`: `)[0]}</strong>}
-              {c && c.split(':')[1]}
-            </Typography>
-          ))}
+  <Typography key={i} gutterBottom variant="subtitle1">
+    {c && c.includes(':') ? (
+      <>
+        <strong>{c.split(':')[0]}:</strong> {c.split(':').slice(1).join(':')}
+      </>
+    ) : (
+      c // Display the entire comment if no colon is present
+    )}
+  </Typography>
+))}
+
+ 
           <div ref={commentRef} />
         </div>
         <div style={{ width: '70%' }}>
           <Typography gutterBottom variant="h6">Write a comment</Typography>
           <TextField
             fullWidth
-            rows={4}
+            minRows={4}
             variant="outlined"
             label="Comment"
             multiline
@@ -67,6 +76,3 @@ const Commentsection = ({ post }) => {
 };
 
 export default Commentsection;
-
-
-

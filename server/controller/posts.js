@@ -1,5 +1,5 @@
 
-import postmessage from "../modules/postmessage.js";
+import postSchema from "../modules/postmessage.js";
 import mongoose from "mongoose";
 import  express  from "express";
 const router =express.Router();
@@ -11,8 +11,8 @@ export const getposts = async (req, res) => {
     try {
         const LIMIT=8;
         const startindex=(Number(page)-1)*LIMIT;//get the starting index of every page
-        const total=await postmessage.countDocuments({}); //how many post are in the database 
-        const post = await postmessage.find().sort({_id:-1}).limit(LIMIT).skip(startindex);//this give us the newest post first
+        const total=await postSchema.countDocuments({}); //how many post are in the database 
+        const post = await postSchema.find().sort({_id:-1}).limit(LIMIT).skip(startindex);//this give us the newest post first
 
 
         res.status(200).json({data:post,currentPage:Number(page),numberOfPages:Math.ceil(total/LIMIT)});
@@ -24,7 +24,7 @@ export const getpost = async (req, res) => {
     const {id}=req.params;
     try {
         
-        const post= await postmessage.findById(id);
+        const post= await postSchema.findById(id);
 
         
         res.status(200).json(post);
@@ -54,7 +54,7 @@ export const getpostsBySearch = async (req, res) => {
             query.tags = { $in: tagsArray };
         }
 
-        const posts = await postmessage.find(query);
+        const posts = await postSchema.find(query);
 
         res.json({ data: posts });
     } catch (error) {    
@@ -66,12 +66,12 @@ export const getpostsBySearch = async (req, res) => {
 export const createpost = async (req, res) => {
     const post = req.body;
 
-    const newPostMessage = new postmessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() })
+    const newpostSchema = new postSchema({ ...post, creator: req.userId, createdAt: new Date().toISOString() })
 
     try {
-        await newPostMessage.save();
+        await newpostSchema.save();
 
-        res.status(201).json(newPostMessage);
+        res.status(201).json(newpostSchema);
     } catch (error) {
         res.status(409).json({ message: error.message });
     }
@@ -80,14 +80,14 @@ export const updatepost = async (req, res) => {
     const { id: _id } = req.params;
     const post = req.body;
     if (!mongoose.Types.ObjectId.isValid(_id)) return res.status(404).send('no id available');
-    const updatepost = await postmessage.findByIdAndUpdate(_id, { ...post, _id }, { new: true });
+    const updatepost = await postSchema.findByIdAndUpdate(_id, { ...post, _id }, { new: true });
     res.json(updatepost);
 }
 
 export const deletepost = async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send('no id available');
-    await postmessage.findByIdAndRemove(id);
+    await postSchema.findByIdAndRemove(id);
     res.json({ message: 'Post Delete successfully' })
 }
 
@@ -100,7 +100,7 @@ export const likePost = async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
     
-    const post = await postmessage.findById(id);
+    const post = await postSchema.findById(id);
 
     const index = post.likes.findIndex((id) => id ===String(req.userId));
 
@@ -110,7 +110,7 @@ export const likePost = async (req, res) => {
       post.likes = post.likes.filter((id) => id !== String(req.userId));
     }
 
-    const updatedPost = await postmessage.findByIdAndUpdate(id, post, { new: true });
+    const updatedPost = await postSchema.findByIdAndUpdate(id, post, { new: true });
 
     res.status(200).json(updatedPost);
 }
@@ -121,11 +121,11 @@ export const commentPost = async (req, res) => {
     const { id } = req.params;
     const { value } = req.body;
 
-    const post = await postmessage.findById(id);
+    const post = await postSchema.findById(id);
 
     post.comments.push(value);
 
-    const updatedPost = await postmessage.findByIdAndUpdate(id, post, { new: true });
+    const updatedPost = await postSchema.findByIdAndUpdate(id, post, { new: true });
 
     res.json(updatedPost);
 };

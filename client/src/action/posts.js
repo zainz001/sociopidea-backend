@@ -40,28 +40,26 @@ export const getPosts = (page) => async (dispatch) => {
   };
 
 
-export const createpost = (post,navigate) => async (dispatch) => {
-
-    try {
-        //we are getting response from backend in this
+  export const createpost = (post, navigate) => async (dispatch) => {
+    try {  // Log the post object
         const { data } = await api.createpost(post);
-        
         dispatch({ type: CREATE, payload: data });
-        navigate(`/posts/${data._id}`)
+        navigate(`/posts/${data._id}`);
     } catch (error) {
         console.log(error.message);
     }
 };
 
-export const updatepost = (id, post) => async (dispatch) => {
 
-    try {
-        const { data } = await api.updatepost(id, post)
-        dispatch({ type: UPDATE, payload: data })
-    }
-    catch (error) {
-        console.log(error);
-    }
+
+export const updatepost = (id, post) => async (dispatch) => {
+  try {
+    const { data } = await api.updatepost(id, post);
+
+    dispatch({ type: UPDATE, payload: data });
+  } catch (error) {
+    console.log(error);
+  }
 };
 export const deletepost = (id) => async (dispatch) => {
 

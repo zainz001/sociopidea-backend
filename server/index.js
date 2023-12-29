@@ -17,26 +17,21 @@ app.use('/user', userRoute);
 
 const PORT = process.env.PORT || 5000;
 
-mongoose.set("strictQuery", false);
-
-class Database {
-  constructor() {
-    this.connect();
-  }
-
-  connect() {
-    mongoose.connect("mongodb+srv://zaindon1A:zaindon1A@cluster0.epdq1ll.mongodb.net/")
-      .then(() => {
-        console.log('Connected to MongoDB');
-      })
-      .catch((error) => {
-        console.error('Error connecting to MongoDB:', error);
-      });
-  }
-}
+mongoose
+  .connect("mongodb://localhost:27017/LMS-DB", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+    console.log("database is mongoDb");
+  })
+  .catch((err) => {
+    console.log(err);
+    console.log("Connection Failed");
+  });
 
 // Singleton instance
-const databaseInstance = new Database();
 
 app.get("/server", (req, res) => {
   res.send("server is running");
