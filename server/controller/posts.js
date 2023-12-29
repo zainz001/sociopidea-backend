@@ -91,7 +91,7 @@ export const deletepost = async (req, res) => {
     res.json({ message: 'Post Delete successfully' })
 }
 
-export const like = async (req, res) => {
+export const likePost = async (req, res) => {
     const { id } = req.params;
 
     if (!req.userId) {
@@ -114,6 +114,7 @@ export const like = async (req, res) => {
 
     res.status(200).json(updatedPost);
 }
+
 
 
 export const commentPost = async (req, res) => {
