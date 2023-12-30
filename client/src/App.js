@@ -5,7 +5,7 @@ import Navbar from './componenets/navbar/navbar';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PostDetails from './componenets/postdetails/PostDetails';
 import Home from './componenets/home/home';
-
+import ReportPage from './componenets/reportPage';
 import Auth from './componenets/auth/auth';
 const App = () => {
   const user =JSON.parse(localStorage.getItem('profile'));
@@ -19,6 +19,8 @@ const App = () => {
         <Route path="/posts/search" exact Component={Home} />
         <Route path="/posts/:id" exact Component={PostDetails} />
         <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/posts" />} />
+        <Route path="/report" element={<ReportPage />} />
+
       </Routes>
       
       

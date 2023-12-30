@@ -14,6 +14,7 @@ const Paginate = ({page}) => {
         if(page) dispatch(getPosts(page));//getpost(post) means jis post ka andar jana chahty ha
     },[page])//[] known as dependancy array mean ka jab os state ma kaam ho ga tu wo chezz load ho ge hamesha
     return (
+        <>
         <Pagination
             classes={{ ul: classes.ul }}
             count={numberOfPages}
@@ -25,6 +26,8 @@ const Paginate = ({page}) => {
             )}
 
         />
+        <Link to="/report">Report</Link>
+        </>
     );
 };
 export default Paginate;
