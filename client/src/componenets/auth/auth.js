@@ -1,3 +1,4 @@
+//Composition pattern is use for the components Larger systems are built by composing smaller, independent components together. This allows for easy maintenance, testing, and updates, as changes to one component do not affect others.
 import React, { useState } from 'react';
 import { Avatar, Button, Paper, Grid, Typography, Container } from '@material-ui/core';
 import { GoogleLogin } from 'react-google-login';

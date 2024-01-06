@@ -3,8 +3,20 @@ import postSchema from "../modules/postmessage.js";
 import mongoose from "mongoose";
 import  express  from "express";
 const router =express.Router();
+//getting only post data
+export const getpost = async (req, res) => {
+    const {id}=req.params;
+    try {
+        
+        const post= await postSchema.findById(id);
 
-
+        
+        res.status(200).json(post);
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+//gets all post
 export const getposts = async (req, res) => {
     
     const {page}=req.query
@@ -16,18 +28,6 @@ export const getposts = async (req, res) => {
 
 
         res.status(200).json({data:post,currentPage:Number(page),numberOfPages:Math.ceil(total/LIMIT)});
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
-}
-export const getpost = async (req, res) => {
-    const {id}=req.params;
-    try {
-        
-        const post= await postSchema.findById(id);
-
-        
-        res.status(200).json(post);
     } catch (error) {
         res.status(404).json({ message: error.message });
     }

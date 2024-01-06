@@ -83,4 +83,72 @@ const like = async (req, res) => {
   }
 };
 
-module.exports = { getposts, createpost, updatepost, deletepost, like };
+const getPost = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const post = await postmessage.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    return res.status(200).json(post);
+  } catch (error) {
+    // Check if the error is a Mongoose CastError (invalid ObjectId format)
+    if (error instanceof mongoose.Error.CastError) {
+      return res.status(404).json({ message: 'Invalid Post ID' });
+    }
+    // For other errors, return a generic 500 Internal Server Error
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+
+
+
+const getPostsBySearch = async (req, res) => {
+  const { searchQuery, tags } = req.query;
+
+  try {
+    const title = searchQuery ? new RegExp(searchQuery, 'i') : undefined;
+    const tagsArray = tags ? tags.split(',') : [];
+
+    const query = {};
+
+    if (title) {
+      query.$or = [
+        { title },
+        { tags: { $in: tagsArray } },
+      ];
+    } else {
+      query.tags = { $in: tagsArray };
+    }
+
+    const posts = await postmessage.find(query);
+
+    res.json({ data: posts });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+const commentPost = async (req, res) => {
+  const { id } = req.params;
+  const { value } = req.body;
+
+  try {
+    const post = await postmessage.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    post.comments.push(value);
+
+    const updatedPost = await postmessage.findByIdAndUpdate(id, post, { new: true });
+
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+module.exports = {getPost,commentPost, getPostsBySearch,getposts, createpost, updatepost, deletepost, like };
